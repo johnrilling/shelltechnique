@@ -107,24 +107,24 @@ LDAP configuration policy for company CENTOS development servers
 Desired State is as follows:
 
 ```
-Required dependency must execute first
+# Required dependency must execute first
 yum update 
 
-Package State: Installed
+# Package State: Installed
 yum -y install openldap openldap-clients openldap-servers
 
-File Location: /root/instructions/ /etc/openldap/slapd.d/
+# File Location: /root/instructions/ /etc/openldap/slapd.d/
 
-File Perms: 600
+# File Perms: 600
 chmod 600 /etc/openldap/slapd.d/*
 
-File Ownership: root
+# File Ownership: root
 chown root.root. /etc/openldap/slapd.d/*
 
-Service State: Start on boot
+# Service State: Start on boot
 chkconfig slapd on --level 3
 
-Service Stage: On
+# Service Stage: On
 service slapd start
 ```
 
@@ -135,17 +135,17 @@ SUDO Configuration Policy for company CENTOS development servers
 Desired State is as follows:
 
 ```
-Required dependency must execute first
+# Required dependency must execute first
 yum update 
 
 
-File Location: /root/instructions/sudoers /etc/
+# File Location: /root/instructions/sudoers /etc/
 mv /root/instructions/sudoers /etc/
 
-File Perms: 755
+# File Perms: 755
 chown 755 /etc/sudo/sudoers.conf 
 
-File Ownership: root
+# File Ownership: root
 chown root.root /etc/sudoers
 ```
 
@@ -156,22 +156,22 @@ Apache configuration policy for company CENTOS development servers
 Desired System State is as follows:
 
 ```
-Required dependency must execute first
+# Required dependency must execute first
 yum update 
 
-Package State: Installed
+# Package State: Installed
 yum -y install httpd 
 
-File Location: /root/instructions/httpd.conf
+# File Location: /root/instructions/httpd.conf
 mv /root/instructions/httpd.conf /etc/httpd/conf/httpd.conf
 
-File Perms State: 755
+# File Perms State: 755
 chown 755 /etc/httpd/conf/httpd.conf 
 
-Service State: Started on system reboot
+# Service State: Started on system reboot
 chkconfig httpd on --level 3 
 
-Service State: Running
+# Service State: Running
 service httpd start 
 ```
 
@@ -185,25 +185,25 @@ MYSQL Configuration Policy for CENTOS Development servers
 Desired State is as follows:
 
 ```
-Required dependency must execute first
+# Required dependency must execute first
 yum update 
 
-Required dependency must execute first
+# Required dependency must execute first
 yum -y install mysql 
 
-Package State: Installed
+# Package State: Installed
 yum -y install mysql-server 
 
-File Location: /root/instructions/my.cnf /etc/mysqld/
+# File Location: /root/instructions/my.cnf /etc/mysqld/
 mv /root/instructions/my.cnf /etc/mysqld/my.cnf
 
-File Perms State: 755
+# File Perms State: 755
 chown 755 /etc/mysqld/my.cnf 
 
-Service State: Started upon system reboots
+# Service State: Started upon system reboots
 chkconfig mysqld on --level 3 
 
-Service State: Running
+# Service State: Running
 service mysqld start 
 ```
 
