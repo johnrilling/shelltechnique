@@ -1,11 +1,10 @@
-# shelltechnique
+# Shell Technique
 ==============
-## Shell based Configuration Management Framework
+### Shell based Configuration Management Framework
 
 
 
 #### Summary:
-========
 Shell based configuration management framework using native Linux tools:
 shell + cronjobs + revision control
 
@@ -13,7 +12,6 @@ shell + cronjobs + revision control
 
 
 #### Benefits:
-========= 
 1. Agentless - No daemon or installation of additional languages(Ruby Gems, Python modules, etc). 
 2. Deployment phase: a single entry in a crontab file !
 3. No version conflicts, no upgrades.
@@ -29,7 +27,6 @@ shell + cronjobs + revision control
 
 
 #### Architectural Overview: Simplicity is Elegance
-=======================
 1. Setup cron to pull instructions(shell scripts/config files/policies) from a configuration server.
 2. Cron regularlt executes these instructions applying configuration policies and maintaining server state.
 
