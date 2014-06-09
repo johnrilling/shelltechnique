@@ -2,10 +2,14 @@
 ==============
 ## Shell based Configuration Management Framework
 
+
+
 #### Summary:
 ========
 Shell based configuration management framework using native Linux tools:
 shell + cronjobs + revision control
+
+
 
 
 #### Benefits:
@@ -22,6 +26,8 @@ shell + cronjobs + revision control
 10. Simplicy is elegance AND power 
 
 
+
+
 #### Architectural Overview: Simplicity is Elegance
 =======================
 1. Setup cron to pull instructions(shell scripts/config files/policies) from a configuration server.
@@ -32,7 +38,6 @@ Example file structure on revision control server is as follows.
 * /servers/devserver001/
 * /servers/devserver002/
 * /servers/devserver003/
-...
 
 Each directory contains.
 1. instructions.sh - configuration script bringing client server into compliance with corporate policies
@@ -62,36 +67,40 @@ Note: the difference between.
 "instructions.sh" is the configuration policy script maintaining client system state.
 ```
 
-# Example 1: Install and Configure RPM REPO on company dev servers
+
+
+#### Example 1: Install and Configure RPM REPO on company dev servers
 ====================================================================
 Repo configuration policy for company CENTOS development servers
 
 Desired System State is as follows:
 
 ```
-File Location: /root/instructions/companyrepo.repo /etc/yum.repos.d/
+# File Location: /root/instructions/companyrepo.repo /etc/yum.repos.d/
 mv /root/instructions/companyrepo.repo /etc/yum.repos.d/
 
-File Perms: 644 
+# File Perms: 644 
 chmod 644 /etc/yum.repos.d/companyrepo.repo
 
-File Ownership: root
+# File Ownership: root
 chown root.root /etc/yum.repos.d/companyrepo.repo
 
-Action: Import REPO GPG key
+# Action: Import REPO GPG key
 rpm --import /root/instructions/RPM-GPG-KEY.txt /etc/path/to/mygpgkeys/
 
-File Ownership: root
+# File Ownership: root
 chown root.root /etc/path/to/mygpgkeys/*
 
-File Perms: /etc/path/to/mygpgkeys/
+# File Perms: /etc/path/to/mygpgkeys/
 chmod 600 /etc/path/to/mygpgkeys/*
 
-Action: Sync with REPO
+# Action: Sync with REPO
 yum update
 ```
 
-# Example 2: Install and maintain LDAP configuration policy on company dev servers
+
+
+#### Example 2: Install and maintain LDAP configuration policy on company dev servers
 ==========================================================================================
 LDAP configuration policy for company CENTOS development servers
 
@@ -119,7 +128,7 @@ Service Stage: On
 service slapd start
 ```
 
-# Example 3: Install and maintain SUDO configuration policy on company dev servers
+#### Example 3: Install and maintain SUDO configuration policy on company dev servers
 ================================================================================
 SUDO Configuration Policy for company CENTOS development servers
 
@@ -140,7 +149,7 @@ File Ownership: root
 chown root.root /etc/sudoers
 ```
 
-# Example 4: Install and maintain the configuration policy for apache on company dev servers
+#### Example 4: Install and maintain the configuration policy for apache on company dev servers
 ==========================================================================================
 Apache configuration policy for company CENTOS development servers
 
@@ -169,7 +178,7 @@ service httpd start
 Note: you know have +3 intelligence ;)
 
 
-# Example 5: Install and maintain MYSQL configuration policy on company devservers
+#### Example 5: Install and maintain MYSQL configuration policy on company devservers
 ================================================================================
 MYSQL Configuration Policy for CENTOS Development servers
 
