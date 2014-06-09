@@ -1,15 +1,14 @@
-shelltechnique
+# shelltechnique
 ==============
+## Shell based Configuration Management Framework
 
-Shell based Configuration Management Framework
-
-# Summary:
+#### Summary:
 ========
 Shell based configuration management framework using native Linux tools:
 shell + cronjobs + revision control
 
 
-Benefits:
+#### Benefits:
 ========= 
 1. Agentless - No daemon or installation of additional languages(Ruby Gems, Python modules, etc). 
 2. Deployment phase: a single entry in a crontab file !
@@ -23,16 +22,16 @@ Benefits:
 10. Simplicy is elegance AND power 
 
 
-# Architectural Overview: Simplicity is Elegance
+#### Architectural Overview: Simplicity is Elegance
 =======================
 1. Setup cron to pull instructions(shell scripts/config files/policies) from a configuration server.
 2. Cron regularlt executes these instructions applying configuration policies and maintaining server state.
 
 Note: All instructions are maintained on a revision control server.
 Example file structure on revision control server is as follows.
-/servers/devserver001/
-/servers/devserver002/
-/servers/devserver003/
+* /servers/devserver001/
+* /servers/devserver002/
+* /servers/devserver003/
 ...
 
 Each directory contains.
@@ -41,22 +40,27 @@ Each directory contains.
 3. instructions.tar.gz a compressed bundle of instructions.sh and associated configuration files 
 
 
-# Architectural Notes:
+#### Architectural Notes:
 ====================
 1. Configure all server crontabs with a similar entry.
-*/15 * * * * /root/get-instructions.sh
+```
+*/15 * * * * /root/get-instructions.sh/
+```
 
 2. /root/get-instructions.sh contains the following.
+```
 cfgmgtserver = mycfgmgtserver001.mydomain.com
 rsync -avzhe ssh root@$cfgmgtserver:/instructions.tar.gz /root/instructions.tar.gz
 tar -xzvf /root/instructions.tar.gz
 /root/instructions/instructions.sh
+```
 
 Note: the difference between.
+```
 "get-instructions.sh" which simply grabs instructions.tar.gz from our configuration management server
 "instructions.tar.gz" bundled and compressed config files and "instructions.sh" 
 "instructions.sh" is the configuration policy script maintaining client system state.
-
+```
 
 # Example 1: Install and Configure RPM REPO on company dev servers
 ====================================================================
@@ -64,6 +68,7 @@ Repo configuration policy for company CENTOS development servers
 
 Desired System State is as follows:
 
+```
 File Location: /root/instructions/companyrepo.repo /etc/yum.repos.d/
 mv /root/instructions/companyrepo.repo /etc/yum.repos.d/
 
@@ -84,7 +89,7 @@ chmod 600 /etc/path/to/mygpgkeys/*
 
 Action: Sync with REPO
 yum update
-
+```
 
 # Example 2: Install and maintain LDAP configuration policy on company dev servers
 ==========================================================================================
@@ -92,6 +97,7 @@ LDAP configuration policy for company CENTOS development servers
 
 Desired State is as follows:
 
+```
 Required dependency must execute first
 yum update 
 
@@ -111,7 +117,7 @@ chkconfig slapd on --level 3
 
 Service Stage: On
 service slapd start
-
+```
 
 # Example 3: Install and maintain SUDO configuration policy on company dev servers
 ================================================================================
@@ -119,6 +125,7 @@ SUDO Configuration Policy for company CENTOS development servers
 
 Desired State is as follows:
 
+```
 Required dependency must execute first
 yum update 
 
@@ -131,7 +138,7 @@ chown 755 /etc/sudo/sudoers.conf
 
 File Ownership: root
 chown root.root /etc/sudoers
-
+```
 
 # Example 4: Install and maintain the configuration policy for apache on company dev servers
 ==========================================================================================
@@ -139,6 +146,7 @@ Apache configuration policy for company CENTOS development servers
 
 Desired System State is as follows:
 
+```
 Required dependency must execute first
 yum update 
 
@@ -156,6 +164,7 @@ chkconfig httpd on --level 3
 
 Service State: Running
 service httpd start 
+```
 
 Note: you know have +3 intelligence ;)
 
@@ -166,6 +175,7 @@ MYSQL Configuration Policy for CENTOS Development servers
 
 Desired State is as follows:
 
+```
 Required dependency must execute first
 yum update 
 
@@ -186,5 +196,6 @@ chkconfig mysqld on --level 3
 
 Service State: Running
 service mysqld start 
+```
 
 John Rilling June 8, 2014
