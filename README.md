@@ -3,10 +3,13 @@
 ### Shell based Configuration Management Framework
   
   
-
+  
+  
+  
 #### Summary:
 Shell based configuration management framework using native Linux tools:
 shell + cronjobs + revision control
+  
   
   
 
@@ -197,4 +200,4 @@ chkconfig mysqld on --level 3
 service mysqld start 
 ```
 
-John Rilling June 8, 2014
+*John Rilling June 8, 2014*
