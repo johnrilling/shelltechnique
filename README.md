@@ -1,15 +1,14 @@
 # Shell Technique
 ==============
 ### Shell based Configuration Management Framework
-
-
+  
+  
 
 #### Summary:
 Shell based configuration management framework using native Linux tools:
 shell + cronjobs + revision control
-
-
-
+  
+  
 
 #### Benefits:
 1. Agentless - No daemon or installation of additional languages(Ruby Gems, Python modules, etc). 
@@ -22,9 +21,8 @@ shell + cronjobs + revision control
 8 Leverages the "Lingua Franca" of all Linux admins/DevOps aka the shell.
 9. Large scale deployment capability.
 10. Simplicy is elegance AND power 
-
-
-
+  
+  
 
 #### Architectural Overview: Simplicity is Elegance
 1. Setup cron to pull instructions(shell scripts/config files/policies) from a configuration server.
@@ -40,10 +38,10 @@ Each directory contains.
 1. instructions.sh - configuration script bringing client server into compliance with corporate policies
 2. configuration files - files we want to install on client server i.e. ldap.conf, sudoers, httpd.conf, my.cnf
 3. instructions.tar.gz a compressed bundle of instructions.sh and associated configuration files 
-
-
+  
+  
+  
 #### Architectural Notes:
-====================
 1. Configure all server crontabs with a similar entry.
 ```
 */15 * * * * /root/get-instructions.sh/
@@ -63,11 +61,10 @@ Note: the difference between.
 "instructions.tar.gz" bundled and compressed config files and "instructions.sh" 
 "instructions.sh" is the configuration policy script maintaining client system state.
 ```
-
-
+  
+  
 
 #### Example 1: Install and Configure RPM REPO on company dev servers
-====================================================================
 Repo configuration policy for company CENTOS development servers
 
 Desired System State is as follows:
@@ -98,7 +95,6 @@ yum update
 
 
 #### Example 2: Install and maintain LDAP configuration policy on company dev servers
-==========================================================================================
 LDAP configuration policy for company CENTOS development servers
 
 Desired State is as follows:
@@ -126,7 +122,6 @@ service slapd start
 ```
 
 #### Example 3: Install and maintain SUDO configuration policy on company dev servers
-================================================================================
 SUDO Configuration Policy for company CENTOS development servers
 
 Desired State is as follows:
@@ -147,7 +142,6 @@ chown root.root /etc/sudoers
 ```
 
 #### Example 4: Install and maintain the configuration policy for apache on company dev servers
-==========================================================================================
 Apache configuration policy for company CENTOS development servers
 
 Desired System State is as follows:
@@ -176,7 +170,6 @@ Note: you know have +3 intelligence ;)
 
 
 #### Example 5: Install and maintain MYSQL configuration policy on company devservers
-================================================================================
 MYSQL Configuration Policy for CENTOS Development servers
 
 Desired State is as follows:
