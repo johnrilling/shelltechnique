@@ -29,7 +29,7 @@ shell + cronjobs + revision control
 
 #### Architectural Overview: Simplicity is Elegance
 1. Setup cron to pull instructions(shell scripts/config files/policies) from a configuration server.
-2. Cron regularlt executes these instructions applying configuration policies and maintaining server state.
+2. Cron regularly executes these instructions applying configuration policies and maintaining server state.
 
 Note: All instructions are maintained on a revision control server.
 Example file structure on revision control server is as follows.
@@ -45,12 +45,12 @@ Each directory contains.
   
   
 #### Architectural Notes:
-1. Configure all server crontabs with a similar entry.
+Configure all server crontabs with a similar entry:
 ```
 */15 * * * * /root/get-instructions.sh/
 ```
 
-2. /root/get-instructions.sh contains the following.
+/root/get-instructions.sh contains the following.
 ```
 cfgmgtserver = mycfgmgtserver001.mydomain.com
 rsync -avzhe ssh root@$cfgmgtserver:/instructions.tar.gz /root/instructions.tar.gz
@@ -58,7 +58,7 @@ tar -xzvf /root/instructions.tar.gz
 /root/instructions/instructions.sh
 ```
 
-Note: the difference between.
+Note: the difference between:
 ```
 "get-instructions.sh" which simply grabs instructions.tar.gz from our configuration management server
 "instructions.tar.gz" bundled and compressed config files and "instructions.sh" 
