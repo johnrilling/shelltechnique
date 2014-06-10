@@ -113,7 +113,7 @@ yum -y install openldap openldap-clients openldap-servers
 chmod 600 /etc/openldap/slapd.d/*
 
 # File Ownership: root
-chown root.root. /etc/openldap/slapd.d/*
+chown root.root /etc/openldap/slapd.d/*
 
 # Service State: Start on boot
 chkconfig slapd on --level 3
