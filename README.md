@@ -131,7 +131,6 @@ Desired State is as follows:
 # Required dependency must execute first
 yum update 
 
-
 # File Location: /root/instructions/sudoers /etc/
 mv /root/instructions/sudoers /etc/
 
