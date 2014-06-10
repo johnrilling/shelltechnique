@@ -50,7 +50,7 @@ Configure all server crontabs with a similar entry:
 */15 * * * * /root/get-instructions.sh/
 ```
 
-/root/get-instructions.sh contains the following.
+/root/get-instructions.sh contains the following:
 ```
 cfgmgtserver = mycfgmgtserver001.mydomain.com
 rsync -avzhe ssh root@$cfgmgtserver:/instructions.tar.gz /root/instructions.tar.gz
@@ -59,11 +59,9 @@ tar -xzvf /root/instructions.tar.gz
 ```
 
 Note: the difference between:
-```
-"get-instructions.sh" which simply grabs instructions.tar.gz from our configuration management server
-"instructions.tar.gz" bundled and compressed config files and "instructions.sh" 
-"instructions.sh" is the configuration policy script maintaining client system state.
-```
+* "get-instructions.sh" which simply grabs instructions.tar.gz from our configuration management server
+* "instructions.tar.gz" bundled and compressed config files and "instructions.sh" 
+* "instructions.sh" is the configuration policy script maintaining client system state.
   
   
 
