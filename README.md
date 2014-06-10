@@ -21,7 +21,7 @@ shell + cronjobs + revision control
 4. Radically reduced code set therefore less security risk.
 6. Almost no CPU/RAM/Disk/Network/Backplane consumption.
 7. Mean time to production (Minimal - ideal for continuous integration environments -"Warp 10 Scotty").
-8 Leverages the "Lingua Franca" of all Linux admins/DevOps aka the shell.
+8. Leverages the "Lingua Franca" of all Linux admins/DevOps aka the shell.
 9. Large scale deployment capability.
 10. Simplicy is elegance AND power 
   
@@ -37,10 +37,10 @@ Example file structure on revision control server is as follows.
 * /servers/devserver002/
 * /servers/devserver003/
 
-Each directory contains.
-1. instructions.sh - configuration script bringing client server into compliance with corporate policies
-2. configuration files - files we want to install on client server i.e. ldap.conf, sudoers, httpd.conf, my.cnf
-3. instructions.tar.gz a compressed bundle of instructions.sh and associated configuration files 
+Each directory contains:
+* instructions.sh - configuration script bringing client server into compliance with corporate policies
+* configuration files - files we want to install on client server i.e. ldap.conf, sudoers, httpd.conf, my.cnf
+* instructions.tar.gz a compressed bundle of instructions.sh and associated configuration files 
   
   
   
