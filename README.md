@@ -3,14 +3,9 @@
 ### Shell based Configuration Management Framework
   
   
-  
-  
-  
 #### Summary:
 Shell based configuration management framework using native Linux tools:
 shell + cronjobs + revision control
-  
-  
   
 
 #### Benefits:
@@ -25,176 +20,203 @@ shell + cronjobs + revision control
 9. Large scale deployment capability.
 10. Simplicy is elegance AND power 
   
-  
 
 #### Architectural Overview: Simplicity is Elegance
-1. Setup cron to pull instructions(shell scripts/config files/policies) from a configuration server.
-2. Cron regularly executes these instructions applying configuration policies and maintaining server state.
+1. Configure cron to pull and execute policies from your configuration management server.
+2. Your done!!
 
-Note: All instructions are maintained on a revision control server.
-Example file structure on revision control server is as follows.
-* /servers/devserver001/
-* /servers/devserver002/
-* /servers/devserver003/
+Policies are simple shell scripts and associated config files representing the policies you want applied to your servers.
+Anothe way to think of this is the state you want your server to consistently be in i.e packages installed, services running,
+file permissions and ownership, etc. 
 
-Each directory contains:
-* instructions.sh - configuration script bringing client server into compliance with corporate policies
-* configuration files - files we want to install on client server i.e. ldap.conf, sudoers, httpd.conf, my.cnf
-* instructions.tar.gz a compressed bundle of instructions.sh and associated configuration files 
-  
-  
-  
-#### Architectural Notes:
-Configure all server crontabs with a similar entry:
-```
-*/15 * * * * /root/get-instructions.sh/
-```
+Lets get started with a simple example. 
+###### Example 1: Apache Policy
+In this example you will configure your server to pull a policy from our configuration management server. Specifically you will
+configure your servers cron to pull an "apache web server policy" from our configuration management server. This policy
+is a simple shell script named apache.sh and the associated config files. 
 
-/root/get-instructions.sh contains the following:
+
+*Step 1:* Configure your server to sync policies with our configuration management server and then execute the apache.sh 
+script every 15 mintues. Make the following entry in our servers crontab file:
 ```
-cfgmgtserver = mycfgmgtserver001.mydomain.com
-rsync -avzhe ssh root@$cfgmgtserver:/instructions.tar.gz /root/instructions.tar.gz
-tar -xzvf /root/instructions.tar.gz
-/root/instructions/instructions.sh
+ssh root@yourserver
+yourserver# crontab -e
+*/15 * * * * rsync -avzhe ssh example1@$ourserver:/policies /policies && /policies/apache/apache.sh 2>&1 >> /policies/apache/apache.sh.log
 ```
 
-Note: the difference between:
-* "get-instructions.sh" which simply grabs instructions.tar.gz from our configuration management server
-* "instructions.tar.gz" bundled and compressed config files and "instructions.sh" 
-* "instructions.sh" is the configuration policy script maintaining client system state.
-  
-  
+*Step 2:* Your done, verify it works!!
+Lets start by examining the command we entered into our crontab:
+"*/15" tells cron to execute the ensuring command every 15 minutes
+" * * * *" tells cron to do it "Every day", "Every week", "Every month", "Every day of the month"
+"rsync -avzhe ssh example1@$ourserver:/policies /policies" tells cron to copy the files located on our configuration managements servers 
+"policies" directory to your servers /policies directory.
 
-#### Example 1: Install and Configure RPM REPO on company dev servers
-Repo configuration policy for company CENTOS development servers
+Because we are using Rysnc once the files are copied, everytime in the future this command is executed it will only tranfer any changes made 
+to the files not the entire files again. In other words this is an extrememly efficient maner to syncronize policies between servers. We are also using ssh. This completely encrypts all data trasfered between our configuration management server and your local server. Very secure. 
 
-Desired System State is as follows:
-
+*Verification:* Review /policies/apache/apache.sh.log for hints
+Verification 1: Verify the "policies" directory and associated contents were transfered by rsync:
+We do this by checking if their is a new directory named "policies" on your server. Inside that directory you should now see an apache.sh and an associated config file "httpd.conf"
 ```
-# File Location: /root/instructions/companyrepo.repo /etc/yum.repos.d/
-mv /root/instructions/companyrepo.repo /etc/yum.repos.d/
-
-# File Perms: 644 
-chmod 644 /etc/yum.repos.d/companyrepo.repo
-
-# File Ownership: root
-chown root.root /etc/yum.repos.d/companyrepo.repo
-
-# Action: Import REPO GPG key
-rpm --import /root/instructions/RPM-GPG-KEY.txt /etc/path/to/mygpgkeys/
-
-# File Ownership: root
-chown root.root /etc/path/to/mygpgkeys/*
-
-# File Perms: /etc/path/to/mygpgkeys/
-chmod 600 /etc/path/to/mygpgkeys/*
-
-# Action: Sync with REPO
-yum update
+ls -alrt /policies
 ```
 
+*Verification 2:* Verify apache is installed:
+yum search httpd
 
 
-#### Example 2: Install and maintain LDAP configuration policy on company dev servers
-LDAP configuration policy for company CENTOS development servers
+*Verification 3:* Verify apache configured to automatically start on system boot?
+chkconfig --list
 
-Desired State is as follows:
-
+*Verification 4:* Verify you have a running apache server.
+Use a command line tool like, curl, wget, lynx, links, nc etc. Here are some examples of how to check:
 ```
-# Required dependency must execute first
-yum update 
-
-# Package State: Installed
-yum -y install openldap openldap-clients openldap-servers
-
-# File Location: /root/instructions/ /etc/openldap/slapd.d/
-
-# File Perms: 600
-chmod 600 /etc/openldap/slapd.d/*
-
-# File Ownership: root
-chown root.root /etc/openldap/slapd.d/*
-
-# Service State: Start on boot
-chkconfig slapd on --level 3
-
-# Service Stage: On
-service slapd start
+wget localhost:7777
+curl localhost:7777
+lynx localhost:7777
+links localhost:7777
+nc localhost 7777
+```
+You should also see an apache server process listed in your servers process table:
+```
+ps aux | grep httpd
+netstat -plant | grep httpd
 ```
 
-#### Example 3: Install and maintain SUDO configuration policy on company dev servers
-SUDO Configuration Policy for company CENTOS development servers
-
-Desired State is as follows:
-
+You should also see an httpd process listening on the 7777 port:
 ```
-# Required dependency must execute first
-yum update 
-
-# File Location: /root/instructions/sudoers /etc/
-mv /root/instructions/sudoers /etc/
-
-# File Perms: 755
-chown 755 /etc/sudo/sudoers.conf 
-
-# File Ownership: root
-chown root.root /etc/sudoers
+netstat -plant | grep 7777
 ```
 
-#### Example 4: Install and maintain the configuration policy for apache on company dev servers
-Apache configuration policy for company CENTOS development servers
+##### Example 1 Summary:
+You configured your server to syncornize an "apache policy" from our configuration management server. This was accomplished by
+editing your servers crontab with a command to download the "/policies" directory and run the "apache.sh" script. Finally we
+verfied the the "apache policy" was actually applied and succeded.
 
-Desired System State is as follows:
-
+Extra Credit: Review the script used to configure apache on your server:
 ```
-# Required dependency must execute first
-yum update 
-
-# Package State: Installed
-yum -y install httpd 
-
-# File Location: /root/instructions/httpd.conf
-mv /root/instructions/httpd.conf /etc/httpd/conf/httpd.conf
-
-# File Perms State: 755
-chown 755 /etc/httpd/conf/httpd.conf 
-
-# Service State: Started on system reboot
-chkconfig httpd on --level 3 
-
-# Service State: Running
-service httpd start 
+more /policies/apache/apache.sh
 ```
 
-Note: you know have +3 intelligence ;)
+You will see the policy defines file permission and ownership, location, etc. Everything you need to apply policies to and maintain
+state on your servers.
 
 
-#### Example 5: Install and maintain MYSQL configuration policy on company devservers
-MYSQL Configuration Policy for CENTOS Development servers
 
-Desired State is as follows:
 
+
+###### Example 2: mysql database Policy
+In this example you will configure your server to pull an additional policy from our configuration management server. Specifically you will
+configure your servers cron to pull the "mysql server policy" from our configuration management server. This policy
+is a simple shell script named mysql.sh and the associated config files. At the end of this example you will have two polices maintained
+on your server, the "apache" and "mysql" policies. Becuase we are going to install multiple policies and some policies may need to be
+executed before others we will adjust our technique. This adjustment involves telling cron to execute a policy_manager.sh which will
+in turn execute the apache.sh and mysql.sh policies. From this point forward cron will always use policy_manager.sh.
+
+Step 1: Configure your server to sync policies with our configuration management server and then execute the policy_manager.sh 
+script every 15 mintues. Make the following entry in our servers crontab file:
 ```
-# Required dependency must execute first
-yum update 
-
-# Required dependency must execute first
-yum -y install mysql 
-
-# Package State: Installed
-yum -y install mysql-server 
-
-# File Location: /root/instructions/my.cnf /etc/mysqld/
-mv /root/instructions/my.cnf /etc/mysqld/my.cnf
-
-# File Perms State: 755
-chown 755 /etc/mysqld/my.cnf 
-
-# Service State: Started upon system reboots
-chkconfig mysqld on --level 3 
-
-# Service State: Running
-service mysqld start 
+ssh root@yourserver
+yourserver# crontab -e
+*/15 * * * * rsync -avzhe ssh example1@$ourserver:/policies /policies && /policies/policy_manager.sh
 ```
 
-*John Rilling June 8, 2014*
+You will notice you are syncing the "policies" directory on our configuration managment server to a policies directory on your server.
+When the directories are synced a number of directories and files are downloaded including our original "/policies/apache/*",  the
+new "/policies/mysql/*", and finally the "/policies/policy_manager.sh" script. 
+
+"policy_manager.sh" script. The policy_manager.sh script is always executed first. It's role is siimilar to Linux "init" when the system
+boots up. Only policy_manager.sh is used exclusively to manage the configuration policies we are applying to this server. Cron always
+executes the policy_manager.sh which then executes all of the specific policy scipts i.e. apache.sh, mysql.sh. 
+
+*Step 2:* Your done!! Verify it works.
+
+*Verification:* Review:
+```
+/policies/apache/apache.sh.log for hints
+/policies/mysql/mysql.sh.log for hints
+/policies/policy_manager.sh.log for hints
+```
+
+*Verification 1:* Verify the "policies" directory and associated contents were transfered by rsync:
+We do this by checking if their is a new directory named "policies" on your server. Inside that directory you should now see an apache.sh and an associated config file "httpd.conf"
+```
+ls -alrt /policies
+```
+
+*Verification 2:* Verify apache and mysql are installed:
+yum search httpd
+yum search mysql
+
+
+*Verification 3:* Verify apache configured to automatically start on system boot?
+chkconfig --list
+chkconfig --list
+
+*Verification 4:* Verify you have running apache and mysql servers.
+APACHE
+Use a command line tool like, curl, wget, lynx, links, nc etc. for apache:
+```
+wget localhost:7777
+curl localhost:7777
+lynx localhost:7777
+links localhost:7777
+nc localhost 7777
+```
+You should also see an apache server process listed in your servers process table:
+```
+ps aux | grep httpd
+netstat -plant | grep httpd
+
+MYSQL
+Use the mysql client to connect to the server
+mysql -h localhost -u root -p
+
+You should also see a mysql server process listed in your servers process table:
+```
+ps aux | grep httpd
+```
+
+You should also see a mysql server process listening on port 8888
+netstat -plant | grep mysql
+
+##### Example 2 Summary:
+You configured your server to syncornize an "apache policy" and a "MySQL" policy from our configuration management server. In addition 
+we started using the "policy_manager.sh" script to manage the policies applied to the server. All of this was accomplished by
+editing your servers crontab with a command to download the "/policies" directory and run the "policy_manager.sh" script. Finally we
+verfied the the "apache" and "mysql" policies are actually applied to the system.
+
+Extra Credit 1: Review the script used to configure mysql on your server:
+```
+more /policies/mysql/mysql.sh
+```
+
+You will see the policy defines file permission and ownership, location, etc. Everything you need to apply policies to and maintain
+state on your servers.
+
+Extra Credit 2: Review the "policy_manager.sh" script used to execute the apache and mysql policies:
+```
+more /policies/policy_manager.sh"
+``` 
+
+
+##### Example 3: Lets get serious, All your base are belong to us.
+In most production corporate environments there is a "base" set of policies applied to most systems. The base of polices 
+depend on the organization but here are some common ones:
+```
+repo_update.sh
+repo.sh
+ntp.sh
+console.sh
+sshd.sh
+ldap.sh
+sudo.sh
+logrotate.sh
+pam.sh
+nsswitch.sh
+postfix.sh
+```
+
+
+
+hn Rilling June 8, 2014*
