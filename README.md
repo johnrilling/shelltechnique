@@ -14,7 +14,7 @@
 
 # 2. Minimal deployment time: a single entry in a crontab file !
 
-# 3. No version conflicts or no upgrades.
+# 3. Leverages the "Lingua Franca" of all Linux admins/DevOps aka the shell.
 
 # 4. No wasted time learning abstract DSL languages.
 
@@ -22,7 +22,7 @@
 
 # 6. Minimal CPU, RAM, disk, network, or back-plane consumption.
 
-# 7. Leverages the "Lingua Franca" of all Linux admins/DevOps aka the shell.
+# 7. No version conflicts or no upgrades.
 
 # 8. Large scale deployment capability.
 
@@ -38,16 +38,16 @@
 
 
 ## Example 1: Download policies - Apache Policy
-In this example you will configure your server to pull a policy from our configuration management server. Specifically you will configure your servers cron to download all policies associated with your server. These policies are simple shell scripts and associated config files. We include a “policy_manager.sh” script to govern the policy execution on your system. Think of it as the “init” of policy management.
+In this example you will configure your server to pull a policy from your configuration management server. Specifically you will configure your servers cron to download all policies associated with your server. These policies are simple shell scripts and associated config files. We include a “policy_manager.sh” script to govern the policy execution on your system. Think of it as the “init” of policy management.
 
-# Step 1: Configure your server to download policies for your server from our configuration management server. Your server will then execute and re-sync policies every 15 minutes. Perform the following:
+# Step 1: Configure your server to download policies for your server from your configuration management server. Your server will then execute and re-sync policies every 15 minutes. Perform the following:
 
 # Connect to your server
 ssh root@yourserver
 
 # Edit your servers crontab to contain the following:
 crontab -e
-*/15 * * * * rsync -avzhe ssh example1@$ourserver:/policies/example-1/* /policies && /policies/policy_manager.sh 2>&1 >> /policies/policy_manager.log
+*/15 * * * * rsync -avzhe ssh example1@$cfgmngmnt-server:/policies/example-1/* /policies && /policies/policy_manager.sh 2>&1 >> /policies/policy_manager.log
 
 # Step 2: Your done, verify it works!!
 
@@ -57,10 +57,10 @@ crontab -e
 
 # ”* * *” tells cron to do it "Every day", "Every week", "Every month", "Every day of the month"
 
-# “rsync -avzhe ssh example1@$ourserver:/policies/example-1/* /policies” tells cron to copy the files located on our configuration managements servers "/policies/example-1" directory to your servers /policies directory.
+# “rsync -avzhe ssh example1@$cfgmngmnt-server:/policies/* /policies” tells cron to copy the files located on our configuration managements servers "/policies" directory to your servers /policies directory.
 
 # NOTES: 
-# Using rysnc enables us to only transfer changes made to existing files rather than downloading the entire directory contents repeatedly. In other words this is an extremely efficient manner to synchronize policies between servers. Using ssh completely encrypts all data transferred between our configuration management server and your local server. Very secure. 
+# Using rysnc enables us to only transfer changes made to existing files rather than downloading the entire directory contents repeatedly. In other words this is an extremely efficient manner to synchronize policies between servers. Using ssh completely encrypts all data transferred between your configuration management server and your local server. Very secure. 
 
 # Example 1 Verification:
 # You should now see a newly created "/policies" directory on your server with the following contents:
@@ -70,7 +70,7 @@ crontab -e
 /policies/apache/httpd.conf 
 
 # Verify apache is installed:
-yum search httpd
+yum list httpd
 
 # Verify apache configured to automatically start on system boot?
 chkconfig –list httpd
@@ -90,7 +90,7 @@ ps aux | grep httpd
 netstat -plant | grep 51500
 
 # Conclusion Example 1:
-# You configured your server to synchronize policies from our configuration management server. This was accomplished by including a command in your servers crontab which downloads the "/policies/example-1" directory and runs the "policy_manager.sh" script. This script execute all the policies applied to your system. In this case it was the apache.sh policy script accompanied by the associated httpd.conf configuration file. 
+# You configured your server to synchronize policies from your configuration management server. This was accomplished by including a command in your servers crontab which downloads the "/policies" directory and runs the "policy_manager.sh" script. This script execute all the policies applied to your system. In this case it was the apache.sh policy script accompanied by the associated httpd.conf configuration file. 
 
 # Extra Credit: Review the script used to configure apache on your server:
 more /policies/apache/apache.sh
@@ -100,16 +100,16 @@ more /policies/apache/apache.sh
 
 
 ## Example 2: Download policies - MYSQL Policy
-In this example you will configure your server to pull a policy from our configuration management server. Specifically you will configure your servers cron to download all policies associated with your server. These policies are simple shell scripts and associated config files. We include a “policy_manager.sh” script to govern the policy execution on your system. Think of it as the “init” of policy management.
+In this example you will configure your server to pull a policy from your configuration management server. Specifically you will configure your servers cron to download all policies associated with your server. These policies are simple shell scripts and associated config files. We include a “policy_manager.sh” script to govern the policy execution on your system. Think of it as the “init” of policy management.
 
-# Step 1: Configure your server to download policies for your server from our configuration management server. Your server will then execute and re-sync policies every 15 minutes. Perform the following:
+# Step 1: Configure your server to download policies for your server from your configuration management server. Your server will then execute and re-sync policies every 15 minutes. Perform the following:
 
 # Connect to your server
 ssh root@yourserver
 
 # Edit your servers crontab to contain the following:
 crontab -e
-*/15 * * * * rsync -avzhe ssh example1@$ourserver:/policies/example-2/* /policies && /policies/policy_manager.sh 2>&1 >> /policies/policy_manager.log
+*/15 * * * * rsync -avzhe ssh example1@$cfgmngmnt-server:/policies /policies && /policies/policy_manager.sh 2>&1 >> /policies/policy_manager.log
 
 # Step 2: Your done, verify it works!!
 
@@ -119,10 +119,10 @@ crontab -e
 
 # ”* * *” tells cron to do it "Every day", "Every week", "Every month", "Every day of the month"
 
-# “rsync -avzhe ssh example1@$ourserver:/policies/example-2/* /policies” tells cron to copy the files located on our configuration managements servers "/policies/example-2" directory to your servers /policies directory.
+# “rsync -avzhe ssh example1@$cfgmngmnt-server:/policies /policies” tells cron to copy the files located on your configuration managements servers "/policies" directory to your servers /policies directory.
 
 # NOTES: 
-# Using rysnc enables us to only transfer changes made to existing files rather than downloading the entire directory contents repeatedly. In other words this is an extremely efficient manner to synchronize policies between servers. Using ssh completely encrypts all data transferred between our configuration management server and your local server. Very secure. 
+# Using rysnc enables us to only transfer changes made to existing files rather than downloading the entire directory contents repeatedly. In other words this is an extremely efficient manner to synchronize policies between servers. Using ssh completely encrypts all data transferred between your configuration management server and your local server. Very secure. 
 
 # Example 2 Verification:
 # You should now see a newly created "/policies" directory on your server with the following contents:
@@ -132,7 +132,7 @@ crontab -e
 /policies/mysql/my.cnf 
 
 # Verify MYSQL is installed:
-yum search mysqld
+yum list mysqld
 
 # Verify mysql configured to automatically start on system boot?
 chkconfig –list mysqld
@@ -149,7 +149,7 @@ ps aux | grep mysqld
 netstat -plant | grep 3306
 
 # Conclusion Example 2:
-# You configured your server to synchronize policies from our configuration management server. This was accomplished by including a command in your servers crontab which downloads the "/policies/example-2" directory and runs the "policy_manager.sh" script. This script execute all the policies applied to your system. In this case it was the mysql.sh policy script accompanied by the associated my.cnf configuration file. 
+# You configured your server to synchronize policies from your configuration management server. This was accomplished by including a command in your servers crontab which downloads the "/policies" directory and runs the "policy_manager.sh" script. This script execute all the policies applied to your system. In this case it was the mysql.sh policy script accompanied by the associated my.cnf configuration file. 
 
 # Extra Credit: Review the script used to configure apache on your server:
 more /policies/mysql/mysql.sh
